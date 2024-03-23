@@ -1,0 +1,165 @@
+# import pygame module in this program
+import pygame
+
+
+
+
+
+
+
+black = (0, 0, 0)
+
+
+
+
+
+def board():
+    pygame.init()
+
+
+    win = pygame.display.set_mode((500, 500))
+
+
+
+    global x, y, up,godMode,score
+    # Starting coordinates for the board.
+    y = 0
+    x = 450
+
+    # Starting coordinates for the second board.
+    y2 = 10
+    x2 = 445
+
+    # Starting coordinates for the third board.
+    y3 = 20
+    x3 = 440
+    up = True
+
+    # Starting coordinates for the dart.
+    ydd=0
+    xdd=10
+
+    # Used to instantly win the game.
+    godMode = False
+    speed =1
+    #
+    dshot = False
+
+    # Board Width and Height.
+    bwidth = 10
+    bheight = 70
+
+
+    # Width and Height for second board.
+    b2width = 5
+    b2height = 50
+
+
+    # Width and Height for third board.
+    b3width = 5
+    b3height = 30
+
+
+
+    if speed<0:
+        speed*=-1
+
+
+
+
+    # Keeps the game running - while loop 'run'.
+    run = True
+    while run:
+
+
+        # Delay before running the game.
+        pygame.time.delay(10)
+        # Background colour.
+        win.fill((250, 250, 250))
+
+
+
+
+        for event in pygame.event.get():
+
+            # When the game is quit, run = false which stops the loop.
+            if event.type == pygame.QUIT:
+
+
+                run = False
+
+
+        # 'Keys' variable which stores which keys are pressed.
+        keys = pygame.key.get_pressed()
+
+        # If dart isn't fired and up or down key is pressed, the dart will move up and down.
+        if keys[pygame.K_UP] and dshot == False:
+            ydd -= 2
+
+
+        if keys[pygame.K_DOWN] and dshot == False:
+                ydd += 2
+
+        # Space = game won.
+        if keys[pygame.K_SPACE]:
+            godMode=True
+
+        # Drawing the dart.
+        pygame.draw.rect(win, (255, 0, 0), (xdd, ydd,20,10),)
+        # Drawing the board.
+        pygame.draw.rect(win, (160, 32, 240), (x, y, bwidth, bheight))
+        # Drawing the second board.
+        pygame.draw.rect(win, (255, 165, 0), (x2, y2, b2width, b2height))
+        # Drawing the third board.
+        pygame.draw.rect(win, (0, 255, 0), (x3, y3, b3width, b3height))
+
+        # Drawing the Score text.
+
+
+
+
+        # Checking to see if the fire key is pressed - Right Key.
+        if keys[pygame.K_RIGHT]:
+            dshot=True
+
+        # Checking to see if game was quit - Left Key
+        if keys[pygame.K_LEFT]:
+            print("Left the game")
+            return 2
+
+        # Dart movement speed along x-axis after it's fired.
+        if dshot==True:
+            xdd+=2
+
+
+
+
+        # If dart x-coordinate is greater than 500 (canvas width) - You Lost.
+        elif xdd>500:
+            print("You Missed!")
+            return 0
+
+
+        # Changes how fast the board is moving on y-axis.
+        # y2 and y3 are for the two smaller boards.
+        y+= speed
+        y2+= speed
+        y3+= speed
+
+        # Used to change Movement direction of the board, when it hits edges.
+        if y <= 0 or y >= 500 - 70:
+            speed *= -1
+
+
+
+        # Updates the canvas.
+        pygame.display.update()
+
+
+    # Quits the Game.
+    pygame.quit()
+
+
+
+
+board()
