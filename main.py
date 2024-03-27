@@ -4,8 +4,9 @@ import pygame
 
 
 
-
-
+global level
+level = 1
+score = 0
 
 black = (0, 0, 0)
 
@@ -64,12 +65,15 @@ def board():
     if speed<0:
         speed*=-1
 
+    
+
 
 
 
     # Keeps the game running - while loop 'run'.
     run = True
     while run:
+        score_font = pygame.font.SysFont("arial", 30)
 
 
         # Delay before running the game.
@@ -114,6 +118,8 @@ def board():
         pygame.draw.rect(win, (0, 255, 0), (x3, y3, b3width, b3height))
 
         # Drawing the Score text.
+        score_text = score_font.render(f'Score: {score}', True, (0, 0, 0))
+        win.blit(score_text, [200, 0])
 
 
 
@@ -131,6 +137,24 @@ def board():
         if dshot==True:
             xdd+=2
 
+         # First statement checks if the drat intersects with the smallest rectangle.
+        if xdd>=x3-2 and xdd<=x3 and ydd>=y3 and ydd<=y2+b3height:
+            score += 3
+            print("You Hit a Bullseye!")
+            return 1
+            
+        # Checks to see if the dart intersects with the middle rectangle.
+        elif xdd>=x2-2 and xdd<=x2 and ydd>=y2 and ydd<=y2+b2height:
+            score += 2
+            print("You Got Two Points.")
+            return 1
+
+        # Checks to see if the dart intersects with the largest rectangle.
+        elif xdd>=x-2 and xdd<=x and ydd>=y and ydd<=y+bheight:
+            score += 1
+            print("You Got One Point.")
+
+            return 1
 
 
 
