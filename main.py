@@ -12,7 +12,7 @@ speed_increment = 0.75  # Amount of speed increase per level up
 black = (0, 0, 0)
 
 screenWidth = 500
-screenHieght = 500
+screenHeight = 500
 
 # Initialise tracerHistory as an array
 tracerHistory = []
@@ -170,7 +170,7 @@ def board():
                     green = 0
 
             # Checks if the tracker for the number of frames passed equals 20 and then increases the tracer width by 1 and drawing the tracer, returning the frame tracker back to 0
-            if changeTracerWidth == 20:
+            if changeTracerWidth == 75:
                 tracerStartingWidth = tracerStartingWidth + 1
                 pygame.draw.lines(win, (red, green, blue), False, tracerHistory, tracerStartingWidth)
                 changeTracerWidth = 0
@@ -244,4 +244,3 @@ while True:
     result = board()
     if result == 2:
         break
-
