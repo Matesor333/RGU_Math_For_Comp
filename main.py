@@ -1,35 +1,25 @@
-# import pygame module in this program
 import pygame
 import math
-import math as m
 
-
-
-
-
-newy =0
-newx=0
+# Initialize global variables
+newy = 0
+newx = 0
 level = 1
 score = 0
+speed = 1  # Initial movement speed
+speed_increment = 0.75  # Amount of speed increase per level up
 
 black = (0, 0, 0)
-
-screenWidth = 500
-screenHieght = 500
-
-#Initialise tracerHistory as an array
-tracerHistory = []
 
 
 def dartPath(startX, startY, initialSpeed, angle, time):
     global newx, newy
-    # calculates the velocity of the ball along eaach axis based on the angle the ball was fired at
-    velx = m.cos(m.radians(angle)) * initialSpeed
-    vely = m.sin(m.radians(angle)) * initialSpeed
+    # calculates the velocity of the ball along each axis based on the angle the ball was fired at
+    velx = math.cos(math.radians(angle)) * initialSpeed
+    vely = math.sin(math.radians(angle)) * initialSpeed
 
     # projectile motion equations
     xMotion = velx * time
-
     yMotion = (vely * time) + ((-9.8 * (time) ** 2) / 2)
 
     # finds the next coordinate along the darts path
@@ -37,15 +27,11 @@ def dartPath(startX, startY, initialSpeed, angle, time):
     newy = round(startY - yMotion)
 
 
-
-t=1
 def board():
     pygame.init()
+    win = pygame.display.set_mode((500, 500))
 
-    global x, y, up, godMode, score , newx,newy,t, win
-
-    win = pygame.display.set_mode((screenWidth, screenHieght))
-    
+    global x, y, up, godMode, score, newx, newy, level, speed
     # Starting coordinates for the board.
     y = 0
     x = 450
@@ -65,8 +51,8 @@ def board():
 
     # Used to instantly win the game.
     godMode = False
-    speed = 1
-    #
+
+    # Flag to indicate if the dart has been fired
     dshot = False
 
     # Board Width and Height.
@@ -90,22 +76,24 @@ def board():
     green = 0
     blue = 0
 
+    # Time variable for dart motion
+    t = 1
+
     if speed < 0:
         speed *= -1
 
     # Keeps the game running - while loop 'run'.
     run = True
     while run:
-
         score_font = pygame.font.SysFont("arial", 30)
 
         # Delay before running the game.
         pygame.time.delay(10)
+
         # Background colour.
         win.fill((250, 250, 250))
 
         for event in pygame.event.get():
-
             # When the game is quit, run = false which stops the loop.
             if event.type == pygame.QUIT:
                 run = False
@@ -114,10 +102,9 @@ def board():
         keys = pygame.key.get_pressed()
 
         # If dart isn't fired and up or down key is pressed, the dart will move up and down.
-        if keys[pygame.K_UP] and dshot == False:
+        if keys[pygame.K_UP] and not dshot:
             ydd -= 2
-
-        if keys[pygame.K_DOWN] and dshot == False:
+        if keys[pygame.K_DOWN] and not dshot:
             ydd += 2
 
         # Space = game won.
@@ -125,7 +112,7 @@ def board():
             godMode = True
 
         # Drawing the dart.
-        pygame.draw.rect(win, (255, 0, 0), (xdd, ydd, 20, 10), )
+        pygame.draw.rect(win, (255, 0, 0), (xdd, ydd, 20, 10))
         # Drawing the board.
         pygame.draw.rect(win, (160, 32, 240), (x, y, bwidth, bheight))
         # Drawing the second board.
@@ -147,110 +134,61 @@ def board():
             return 2
 
         # Dart movement speed along x-axis after it's fired.
+        if dshot:
+            dartPath(xdd, ydd, 85, 0, t)
+            pygame.draw.circle(win, (255, 0, 0), (newx, newy), 5)
 
-        if dshot == True:
-            dartPath(xdd, ydd,85,0,t)
-            pygame.draw.circle(win, (255, 0, 0), (newx,newy),(5))
-            print("new ",newx,newy)
-            print("old ",ydd, xdd)
-            t+=0.05
+            # Update time for next frame
+            t += 0.05
 
-                        #Set the first coord to be where the dart first appears
-            currentCoords = (newx, newy)
-            tracerHistory.append(currentCoords)
-
-            #Repeat previous to get an initial starting point to draw from
-            currentCoords = (newx, newy)
-            tracerHistory.append(currentCoords)
-
-            # Gets the distance the dart is from the board
-            distance = int(math.sqrt((x - newx) ** 2 + ((y + 35) - newy) ** 2))
-
-            # Checks if the distance is greater than 255 and then sets the "red" in RGB to 255
-            if distance > 255:
-                distance = 255
-                red = distance
-
-            # Otherwse set red equal to distance as it decreases and increase the green value up by one per frame
-            else:
-                red = distance
-                green += 1
-
-                # Checks if the dart is past the board and then sets the red to 255 and green to 0
-                if xdd > x:
-                    red = 255
-                    green = 0
-
-            # Checks if the tracker for the number of frames passed equals 20 and then increases the tracer width by 1 and drawing the tracer, returning the frame tracker back to 0
-            if changeTracerWidth == 20:
-                tracerStartingWidth = tracerStartingWidth + 1
-                pygame.draw.lines(win, (red, green, blue), False, tracerHistory, tracerStartingWidth)
-                changeTracerWidth = 0
-
-            # Otherwise, draw the tracer with the current width and then increment the tracker by 1
-            else:
-                pygame.draw.lines(win, (red, green, blue), False, tracerHistory, tracerStartingWidth)
-                changeTracerWidth += 1
-
-            #Adds the previous coords in again to allow for the enxt line to start here
-            previousCoords = (newx, newy)
-            tracerHistory.append(previousCoords)
-
-
-            # Gets the distance the dart is from the board
+            # Calculate distance from dart to board
             distance = int(math.sqrt((x - xdd) ** 2 + ((y + 35) - ydd) ** 2))
 
-            # Checks if the distance is greater than 255 and then sets the "red" in RGB to 255
+            # Adjust tracer color based on distance
             if distance > 255:
                 distance = 255
                 red = distance
-
-            # Otherwse set red equal to distance as it decreases and increase the green value up by one per frame
             else:
                 red = distance
                 green += 1
-
-                # Checks if the dart is past the board and then sets the red to 255 and green to 0
                 if xdd > x:
                     red = 255
                     green = 0
 
-            # Checks if the tracker for the number of frames passed equals 20 and then increases the tracer width by 1 and drawing the tracer, returning the frame tracker back to 0
-            if changeTracerWidth == 20:
-                tracerStartingWidth = tracerStartingWidth + 1
-                pygame.draw.line(win, (red, green, blue), (xdd - xdd + 5, ydd + 5), (xdd, ydd + 5), tracerStartingWidth)
-                changeTracerWidth = 0
+            # Check if the dart intersects with any of the boards
+            if newx >= x3 - 2 and newx <= x3 and newy >= y3 and newy <= y2 + b3height:
+                score += 3
+                print("You Hit a Bullseye!")
+                level += 1  # Increment level when the dart hits the board
+                if level > 4:
+                    level = 4  # Cap the level at 4
+                speed = 1 + speed_increment * level  # Increase speed with each level
+                print("Level:", level)  # Print current level
+                return 1
 
-            # Otherwise, draw the tracer with the current width and then increment the tracker by 1
-            else:
-                pygame.draw.line(win, (red, green, blue), (xdd - xdd + 5, ydd + 5), (xdd, ydd + 5), tracerStartingWidth)
-                changeTracerWidth = changeTracerWidth + 1
+            elif newx >= x2 - 2 and newx <= x2 and newy >= y2 and newy <= y2 + b2height:
+                score += 2
+                print("You Got Two Points.")
+                level += 1  # Increment level when the dart hits the board
+                if level > 4:
+                    level = 4  # Cap the level at 4
+                speed = 1 + speed_increment * level  # Increase speed with each level
+                print("Level:", level)  # Print current level
+                return 1
 
-        # First statement checks if the drat intersects with the smallest rectangle.
-        if newx >= x3 - 2 and newx <= x3 and newy >= y3 and newy <= y2 + b3height:
-            score += 3
-            print("You Hit a Bullseye!")
-            return 1
+            elif newx >= x - 2 and newx <= x and newy >= y and newy <= y + bheight:
+                score += 1
+                print("You Got One Point.")
+                level += 1  # Increment level when the dart hits the board
+                if level > 4:
+                    level = 4  # Cap the level at 4
+                speed = 1 + speed_increment * level  # Increase speed with each level
+                print("Level:", level)  # Print current level
+                return 1
 
-        # Checks to see if the dart intersects with the middle rectangle.
-        elif newx >= x2 - 2 and newx <= x2 and newy >= y2 and newy <= y2 + b2height:
-            score += 2
-            print("You Got Two Points.")
-            return 1
-
-        # Checks to see if the dart intersects with the largest rectangle.
-        elif newx >= x - 2 and newx <= x and newy >= y and newy <= y + bheight:
-            score += 1
-            print("You Got One Point.")
-
-            return 1
-
-
-
-        # If dart x-coordinate is greater than 500 (canvas width) - You Lost.
-        elif newx > 500:
-            print("You Missed!")
-            return 0
+            elif newx > 500:
+                print("You Missed!")
+                return 0
 
         # Changes how fast the board is moving on y-axis.
         # y2 and y3 are for the two smaller boards.
@@ -268,5 +206,9 @@ def board():
     # Quits the Game.
     pygame.quit()
 
+# Run the game loop
+while True:
+    result = board()
+    if result == 2:
+        break
 
-board()
