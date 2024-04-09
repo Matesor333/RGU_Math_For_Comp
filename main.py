@@ -11,6 +11,12 @@ speed_increment = 0.75  # Amount of speed increase per level up
 
 black = (0, 0, 0)
 
+screenWidth = 500
+screenHieght = 500
+
+# Initialise tracerHistory as an array
+tracerHistory = []
+
 
 def dartPath(startX, startY, initialSpeed, angle, time):
     global newx, newy
@@ -29,7 +35,7 @@ def dartPath(startX, startY, initialSpeed, angle, time):
 
 def board():
     pygame.init()
-    win = pygame.display.set_mode((500, 500))
+    win = pygame.display.set_mode((screenWidth, screenHeight))
 
     global x, y, up, godMode, score, newx, newy, level, speed
     # Starting coordinates for the board.
@@ -138,6 +144,14 @@ def board():
             dartPath(xdd, ydd, 85, 0, t)
             pygame.draw.circle(win, (255, 0, 0), (newx, newy), 5)
 
+            # Set the first coord to be where the dart first appears
+            currentCoords = (newx, newy)
+            tracerHistory.append(currentCoords)
+
+            # Repeat previous to get an initial starting point to draw from
+            currentCoords = (newx, newy)
+            tracerHistory.append(currentCoords)
+
             # Update time for next frame
             t += 0.05
 
@@ -154,6 +168,21 @@ def board():
                 if xdd > x:
                     red = 255
                     green = 0
+
+            # Checks if the tracker for the number of frames passed equals 20 and then increases the tracer width by 1 and drawing the tracer, returning the frame tracker back to 0
+            if changeTracerWidth == 20:
+                tracerStartingWidth = tracerStartingWidth + 1
+                pygame.draw.lines(win, (red, green, blue), False, tracerHistory, tracerStartingWidth)
+                changeTracerWidth = 0
+
+            # Otherwise, draw the tracer with the current width and then increment the tracker by 1
+            else:
+                pygame.draw.lines(win, (red, green, blue), False, tracerHistory, tracerStartingWidth)
+                changeTracerWidth += 1
+
+            # Adds the previous coords in again to allow for the next line to start here
+            previousCoords = (newx, newy)
+            tracerHistory.append(previousCoords)
 
             # Check if the dart intersects with any of the boards
             if newx >= x3 - 2 and newx <= x3 and newy >= y3 and newy <= y2 + b3height:
