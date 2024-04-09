@@ -193,6 +193,7 @@ def board():
                     level = 4  # Cap the level at 4
                 speed = 1 + speed_increment * level  # Increase speed with each level
                 print("Level:", level)  # Print current level
+                tracerHistory.clear()
                 return 1
 
             elif newx >= x2 - 2 and newx <= x2 and newy >= y2 and newy <= y2 + b2height:
@@ -203,6 +204,7 @@ def board():
                     level = 4  # Cap the level at 4
                 speed = 1 + speed_increment * level  # Increase speed with each level
                 print("Level:", level)  # Print current level
+                tracerHistory.clear()
                 return 1
 
             elif newx >= x - 2 and newx <= x and newy >= y and newy <= y + bheight:
@@ -213,10 +215,12 @@ def board():
                     level = 4  # Cap the level at 4
                 speed = 1 + speed_increment * level  # Increase speed with each level
                 print("Level:", level)  # Print current level
+                tracerHistory.clear()
                 return 1
 
             elif newx > 500:
                 print("You Missed!")
+                tracerHistory.clear()
                 return 0
 
         # Changes how fast the board is moving on y-axis.
