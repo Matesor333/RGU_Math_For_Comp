@@ -248,7 +248,7 @@ def board():
 
 
         # If dart x-coordinate is greater than 500 (canvas width) - You Lost.
-        elif xdd > 500:
+        elif newx > 500:
             print("You Missed!")
             return 0
 
