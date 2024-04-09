@@ -14,6 +14,12 @@ score = 0
 
 black = (0, 0, 0)
 
+screenWidth = 500
+screenHieght = 500
+
+#Initialise tracerHistory as an array
+tracerHistory = []
+
 
 def dartPath(startX, startY, initialSpeed, angle, time):
     global newx, newy
@@ -36,9 +42,10 @@ t=1
 def board():
     pygame.init()
 
-    win = pygame.display.set_mode((500, 500))
+    global x, y, up, godMode, score , newx,newy,t, win
 
-    global x, y, up, godMode, score , newx,newy,t
+    win = pygame.display.set_mode((screenWidth, screenHieght))
+    
     # Starting coordinates for the board.
     y = 0
     x = 450
@@ -148,6 +155,46 @@ def board():
             print("old ",ydd, xdd)
             t+=0.05
 
+                        #Set the first coord to be where the dart first appears
+            currentCoords = (newx, newy)
+            tracerHistory.append(currentCoords)
+
+            #Repeat previous to get an initial starting point to draw from
+            currentCoords = (newx, newy)
+            tracerHistory.append(currentCoords)
+
+            # Gets the distance the dart is from the board
+            distance = int(math.sqrt((x - newx) ** 2 + ((y + 35) - newy) ** 2))
+
+            # Checks if the distance is greater than 255 and then sets the "red" in RGB to 255
+            if distance > 255:
+                distance = 255
+                red = distance
+
+            # Otherwse set red equal to distance as it decreases and increase the green value up by one per frame
+            else:
+                red = distance
+                green += 1
+
+                # Checks if the dart is past the board and then sets the red to 255 and green to 0
+                if xdd > x:
+                    red = 255
+                    green = 0
+
+            # Checks if the tracker for the number of frames passed equals 20 and then increases the tracer width by 1 and drawing the tracer, returning the frame tracker back to 0
+            if changeTracerWidth == 20:
+                tracerStartingWidth = tracerStartingWidth + 1
+                pygame.draw.lines(win, (red, green, blue), False, tracerHistory, tracerStartingWidth)
+                changeTracerWidth = 0
+
+            # Otherwise, draw the tracer with the current width and then increment the tracker by 1
+            else:
+                pygame.draw.lines(win, (red, green, blue), False, tracerHistory, tracerStartingWidth)
+                changeTracerWidth += 1
+
+            #Adds the previous coords in again to allow for the enxt line to start here
+            previousCoords = (newx, newy)
+            tracerHistory.append(previousCoords)
 
 
             # Gets the distance the dart is from the board
